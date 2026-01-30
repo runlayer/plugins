@@ -1,0 +1,16 @@
+{
+  "name": "runlayer-plugins",
+  "owner": {
+    "name": "Runlayer"
+  },
+  "metadata": {
+    "description": "Runlayer plugins"
+  },
+  "plugins": [
+    {
+      "name": "mcp-builder",
+      "source": "./mcp-builder",
+      "description": "Build production-quality MCP servers for any API or service, in any language"
+    }
+  ]
+}

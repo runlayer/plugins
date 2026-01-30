@@ -1,0 +1,8 @@
+{
+  "name": "mcp-builder",
+  "description": "Build production-quality MCP servers that enable LLMs to interact with external services through well-designed tools. Provides architecture guidance, tool design patterns, and implementation workflows for any language.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Runlayer"
+  }
+}
