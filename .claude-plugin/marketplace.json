@@ -11,6 +11,11 @@
       "name": "mcp-builder",
       "source": "./mcp-builder",
       "description": "Build production-quality MCP servers for any API or service, in any language"
+    },
+    {
+      "name": "plugin-builder",
+      "source": "./plugin-builder",
+      "description": "Build local plugin scaffolds for Claude Code with Runlayer MCP integration"
     }
   ]
 }

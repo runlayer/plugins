@@ -21,6 +21,7 @@ claude /plugin install runlayer-plugins/mcp-builder
 | Plugin | Description |
 |--------|-------------|
 | **mcp-builder** | Build production-quality MCP servers for any API or service |
+| **plugin-builder** | Build local plugin scaffolds for Claude Code with Runlayer MCP integration |
 
 ---
 
@@ -41,6 +42,36 @@ A skill that guides you through building MCP (Model Context Protocol) servers fr
 - Shared utilities (retry, error handling, pagination)
 - Testing and evaluation workflows
 - Quality checklist
+
+---
+
+### plugin-builder
+
+A skill that guides you through building Claude Code plugin scaffolds. Integrates with Runlayer MCP to discover available servers and configure tool connectors.
+
+**Prerequisites:** Runlayer MCP must be installed and authorized
+
+**Triggers:**
+- "Create a plugin for [domain]"
+- "Build a plugin"
+- "Scaffold a new plugin"
+
+**What you get:**
+- Guided workflow with native UI components
+- Skills and/or Commands based on your automation preference
+- CONNECTORS.md with available integrations
+- .mcp.json configured with real Runlayer server URLs
+- Proper directory structure for marketplace or standalone use
+
+**Output structure:**
+```
+<plugin-slug>/
+├── .claude-plugin/plugin.json
+├── skills/<skill-name>/SKILL.md
+├── commands/<command>.md
+├── CONNECTORS.md
+└── .mcp.json (if tools needed)
+```
 
 ## Contributing
 

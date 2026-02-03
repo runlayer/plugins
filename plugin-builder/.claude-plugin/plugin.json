@@ -1,0 +1,8 @@
+{
+  "name": "plugin-builder",
+  "description": "Build local plugin scaffolds for Claude Code with Runlayer MCP integration. Guides you through creating skills, commands, and MCP connector configurations.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Runlayer"
+  }
+}
