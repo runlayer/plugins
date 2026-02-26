@@ -1,0 +1,17 @@
+{
+  "name": "runlayer-plugin",
+  "owner": {
+    "name": "Runlayer",
+    "email": "support@runlayer.com"
+  },
+  "metadata": {
+    "description": "Runlayer plugin for Cursor"
+  },
+  "plugins": [
+    {
+      "name": "runlayer",
+      "source": "cursor-plugin",
+      "description": "MCP governance: block shadow MCPs, enforce policies, protect secrets. Includes skills for building MCP servers and plugins."
+    }
+  ]
+}
