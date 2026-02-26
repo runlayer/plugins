@@ -1,7 +1,7 @@
 {
   "name": "runlayer",
   "version": "1.0.0",
-  "description": "MCP governance: block shadow MCPs, enforce policies, protect secrets. Includes skills for building MCP servers and Cursor plugins.",
+  "description": "Simpler, safer way to run MCPs, Skills, and Agents. Discover what's running, enforce security policies in real time, protect secrets, and get full audit trails — all built for how developers actually work in Cursor.",
   "author": {
     "name": "Runlayer"
   },
