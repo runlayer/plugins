@@ -1,8 +1,21 @@
 # Runlayer Plugins
 
-A curated collection of Claude Code plugins to supercharge your development workflow.
+A curated collection of plugins to supercharge your development workflow. Available for both **Cursor** and **Claude Code**.
 
-## Installation
+## Cursor Plugin
+
+Install from the [Cursor Marketplace](https://cursor.com/marketplace) (search for "runlayer"), or once published:
+
+| Component | What it does |
+|-----------|-------------|
+| **Hooks** | Validates MCP tool calls against Runlayer backend, blocks access to `.env` and MCP config files |
+| **Rules** | Prevents shadow MCP installation, enforces secrets hygiene |
+| **Skills** | MCP security audit, MCP server builder, Cursor plugin builder |
+| **Commands** | `/runlayer:build-mcp`, `/runlayer:build-plugin` |
+
+See [`cursor-plugin/README.md`](cursor-plugin/README.md) for full details and setup instructions.
+
+## Claude Code Plugins
 
 Add this marketplace to Claude Code:
 
@@ -15,8 +28,6 @@ Then install any plugin:
 ```bash
 claude /plugin install runlayer-plugins/mcp-builder
 ```
-
-## Plugins
 
 | Plugin | Description |
 |--------|-------------|
@@ -77,8 +88,8 @@ A skill that guides you through building Claude Code plugin scaffolds. Integrate
 
 1. Fork this repository
 2. Create your plugin in a new directory
-3. Add a `.claude-plugin/plugin.json` manifest
-4. Update `marketplace.json` to include your plugin
+3. Add a `.cursor-plugin/plugin.json` or `.claude-plugin/plugin.json` manifest
+4. Update the relevant `marketplace.json` to include your plugin
 5. Submit a pull request
 
 ## License

@@ -1,0 +1,13 @@
+---
+description: Enforce MCP governance - prevent shadow MCPs, require approval for server installation
+alwaysApply: true
+---
+
+## MCP Governance
+
+- NEVER install, configure, or enable an MCP server without explicit user approval.
+- NEVER run `npx -y @modelcontextprotocol/server-*` or similar ad-hoc MCP server commands. Prefer Runlayer-managed servers.
+- When the user asks to add an MCP server, check if it is available through Runlayer first.
+- If an `.mcp.json` or MCP config references servers not managed by Runlayer (no `runlayer.com` in the URL and not using `runlayer run <uuid>`), flag them as **shadow MCPs** and warn the user.
+- Shadow MCPs bypass organizational security policies, audit logging, and access controls.
+- When suggesting MCP integrations, always recommend the Runlayer-managed version if available.
