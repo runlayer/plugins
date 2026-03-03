@@ -1,11 +1,11 @@
 ---
 name: mcp-builder
-description: Build production-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services through well-designed tools. Use this skill when the user wants to create, scaffold, or implement an MCP server for any API or service, in any language. Triggers include requests to "build an MCP server", "create MCP tools", "implement MCP", "add tools for [service]", "connect [service] via MCP", or any task involving MCP server development, tool design, or MCP architecture decisions.
+description: Build, test, and deploy production-quality MCP (Model Context Protocol) servers. Full lifecycle -- build locally, test interactively with MCP Inspector, iterate until working, then optionally deploy to Runlayer. Triggers include "build an MCP server", "create MCP tools", "implement MCP", "add tools for [service]", "connect [service] via MCP", or any MCP server development task.
 ---
 
 # MCP Server Builder
 
-Build MCP servers that enable LLMs to accomplish real-world tasks through well-designed tools. Server quality is measured by how effectively agents can use the tools, not by API coverage alone.
+Build, test, and deploy MCP servers that enable LLMs to accomplish real-world tasks through well-designed tools. Server quality is measured by how effectively agents can use the tools, not by API coverage alone.
 
 ## Before You Start
 
@@ -19,12 +19,14 @@ Apply the language-specific conventions (naming, SDK, validation library, projec
 
 ## Development Process
 
-Follow four phases in order:
+Follow six phases in order. **Phases 1-5 are mandatory. Do NOT skip any phase. Do NOT declare the server complete until Phase 5 passes.**
 
 1. **Research & Plan** -- Study the target API (endpoints, auth, data models, rate limits, pagination). Plan tool coverage. Prioritize comprehensive API coverage over workflow shortcuts when uncertain.
 2. **Implement** -- Build infrastructure first (API client, auth, errors, formatters), then tools incrementally.
-3. **Review & Test** -- Build, lint, test with MCP Inspector. Review for duplication, consistent errors, type coverage.
+3. **Review & Build** -- Build, lint, fix all errors. Review for duplication, consistent errors, type coverage.
 4. **Evaluate** -- Create 10 complex realistic questions requiring multiple tool calls with stable verifiable answers.
+5. **Verify (MANDATORY)** -- Test the server by sending real MCP protocol messages. At minimum: initialize, tools/list, and one tool call. Iterate on failures. The server is NOT done until this passes. See `references/testing.md`.
+6. **Deploy (Optional)** -- When tests pass, offer to deploy to Runlayer via `uvx runlayer deploy`. See `references/deploy.md`.
 
 ## Architecture Decisions
 
@@ -118,3 +120,98 @@ Before declaring the server complete:
 - [ ] Auth validated on every request
 - [ ] No secrets in logs
 - [ ] Build completes without errors
+
+## Phase 5: Verify (MANDATORY -- DO NOT SKIP)
+
+**This phase is required. The server is NOT complete until these tests pass.** Read `references/testing.md` for detailed patterns.
+
+### Minimum Viable Test (always run, no credentials needed)
+
+Even without API credentials, you MUST verify the server works at the MCP protocol level by piping JSON-RPC messages to the server process:
+
+1. **Initialize** -- Send `initialize` request, confirm server responds with `protocolVersion`, `capabilities`, and `serverInfo`.
+2. **List tools** -- Send `tools/list`, confirm all expected tools appear with correct names, schemas, and annotations.
+3. **Error handling** -- Call a tool (e.g. a read tool) and verify it returns a graceful `isError: true` response (not a crash) when credentials are missing or the resource doesn't exist.
+
+Example for stdio servers:
+
+```bash
+# Test 1: Initialize
+echo '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}' | node dist/index.js 2>/dev/null
+
+# Test 2: List tools (send initialize + notification + list in sequence)
+printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}\n{"jsonrpc":"2.0","method":"notifications/initialized"}\n{"jsonrpc":"2.0","id":2,"method":"tools/list","params":{}}\n' | node dist/index.js 2>/dev/null
+
+# Test 3: Call a tool and verify error handling
+printf '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0.0"}}}\n{"jsonrpc":"2.0","method":"notifications/initialized"}\n{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"SERVICE_TOOL_NAME","arguments":{}}}\n' | node dist/index.js 2>/dev/null
+```
+
+Adapt `node dist/index.js` for Python (`uv run server.py`) as needed.
+
+**If any test fails, fix the code and re-run. Do not proceed to Phase 6.**
+
+### Full Interactive Testing (when credentials are available)
+
+1. **Start MCP Inspector:**
+   - TypeScript: `npx @anthropic-ai/mcp-inspector npx tsx src/index.ts`
+   - Python: `npx @anthropic-ai/mcp-inspector uv run server.py`
+
+2. **Test each tool systematically:**
+   - Start with read-only tools (lowest risk)
+   - Test edge cases: empty inputs, pagination boundaries, max lengths
+   - Verify error handling with invalid inputs
+   - Test destructive operations last (with user confirmation)
+
+3. **On failure:**
+   - Capture the error message from Inspector output
+   - Fix the issue in code
+   - Re-run the failing test
+   - Continue until all tools pass
+
+4. **Exit criteria:** All tools respond correctly to valid inputs and return proper MCP errors for invalid inputs.
+
+## Phase 6: Deploy (Optional)
+
+When all interactive tests pass, ask the user:
+
+> "Your MCP server is working correctly. Would you like to deploy it to Runlayer?"
+
+If yes, read `references/deploy.md` for full details, then:
+
+### Step 1: Login
+
+```bash
+uvx runlayer login
+```
+
+This stores credentials locally. No `--secret`/`--host` flags needed on subsequent commands.
+
+### Step 2: Ensure the server can listen on a port
+
+See `references/deploy.md` Transport Considerations. Options:
+- **Native HTTP** (recommended): add `/health` + `/mcp` endpoints
+- **stdio with bridge**: wrap with `supergateway` in the Dockerfile
+- **Dual-mode**: use `PORT` env var to switch between stdio and HTTP
+
+### Step 3: Create deployment files
+
+1. **Dockerfile** — Use template from `references/deploy.md`. Test locally with `docker build .`
+2. **`.dockerignore`** — Exclude `node_modules`, `dist`, `.git`, `.env`, `tests`
+3. **Initialize deployment:**
+   ```bash
+   uvx runlayer deploy init
+   ```
+   This generates `runlayer.yaml` with the deployment ID. Edit it to set `service.port`.
+
+### Step 4: Deploy
+
+```bash
+uvx runlayer deploy
+```
+
+### Step 5: Report success
+
+Show:
+- Deployment ID
+- Instructions to register as MCP server in the Runlayer UI
+- Any env vars the user still needs to configure in Runlayer (API keys, credentials for the target service)

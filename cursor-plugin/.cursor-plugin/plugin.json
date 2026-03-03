@@ -8,7 +8,7 @@
   "homepage": "https://runlayer.com",
   "repository": "https://github.com/Runlayer/plugins",
   "license": "MIT",
-  "keywords": ["mcp", "security", "governance", "shadow-mcp", "mcp-builder"],
+  "keywords": ["mcp", "security", "governance", "shadow-mcp", "mcp-builder", "mcp-test", "mcp-deploy", "mcp-inspector", "mcp-lifecycle"],
   "logo": "assets/runlayer-logo.png",
   "hooks": "hooks/hooks.json"
 }

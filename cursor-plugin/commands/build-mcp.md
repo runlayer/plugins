@@ -1,11 +1,11 @@
 ---
 name: build-mcp
-description: Build a production-quality MCP server for any API or service
+description: Build, test, and optionally deploy an MCP server
 ---
 
 # Build MCP Server
 
-Start the guided MCP server build workflow. This command activates the **mcp-builder** skill.
+Complete MCP server lifecycle: build, test interactively, iterate until working, then optionally deploy to Runlayer.
 
 ## What it does
 
@@ -14,7 +14,10 @@ Start the guided MCP server build workflow. This command activates the **mcp-bui
 3. Walks through architecture decisions (transport, state, auth)
 4. Scaffolds the project structure
 5. Implements tools incrementally with proper schemas, error handling, and pagination
-6. Runs quality checklist before completion
+6. Runs quality checklist
+7. **Launches MCP Inspector for interactive testing**
+8. **Iterates on failures until all tools work**
+9. **Offers to deploy to Runlayer when ready**
 
 ## Usage
 
